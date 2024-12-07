@@ -1,0 +1,40 @@
+---
+templateDir: templates/server
+additionalProperties:
+  packageName: MultiFlexi
+  apiPackage: ApiServer
+  licenseName: MIT
+  UserId: VitexSoftware
+  RepoId: multiflexi-server
+  infoEmail: vitezslav.dvorak@spojenet.cz
+  infoUrl: https://github.com/VitexSoftware/multiflexi-server
+  artifactUrl: https://multiflexi.readthedocs.io/en/latest/
+  appDescription: API Server library for MultiFlexi
+  apiVersion: 0.1.0
+  allowUnicodeIdentifiers: true
+  invokerPackage: MultiFlexi\Api
+  modelPackage: Model
+  developerOrganization: VitexSoftware
+  developerOrganizationUrl: https://vitexsoftware.com
+  variableNamingConvention: camelCase
+  composerPackageName: vitexsoftware/multiflexi-api-server
+  enablePostProcessFile: true
+files:
+  php-cs-fixer-dist-php.mustache:
+      folder: .
+      destinationFilename: .php-cs-fixer.dist.php
+  phpstan-default-baseline.mustache:
+      folder: .
+      destinationFilename: phpstan-default-baseline.neon
+  phpstan-default.neon.mustache:
+      folder: .
+      destinationFilename: phpstan-default.neon.dist
+  makefile.mustache:
+      folder: .
+      destinationFilename: Makefile
+  license.mustache:
+      folder: .
+      destinationFilename: LICENSE
+  composer.mustache:
+      folder: .
+      destinationFilename: composer.json
