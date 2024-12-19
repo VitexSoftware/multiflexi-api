@@ -2,7 +2,7 @@
 templateDir: templates/server
 additionalProperties:
   packageName: MultiFlexi
-  apiPackage: ApiServer
+  apiPackage: Server
   licenseName: MIT
   UserId: VitexSoftware
   RepoId: multiflexi-server

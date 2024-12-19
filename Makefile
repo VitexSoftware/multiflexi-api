@@ -37,7 +37,7 @@ prepare:
 	npm install --save-dev --save-exact prettier
 
 server:
-	PHP_POST_PROCESS_FILE="make cs" npx openapi-generator-cli generate -i openapi-schema.yaml -g php-slim4 -c server.yaml -o ~/Projects/Multi/multiflexi-server
+	npx openapi-generator-cli generate -i openapi-schema.yaml -g php-slim4 -c server.yaml -o ~/Projects/Multi/multiflexi-server; cd ~/Projects/Multi/multiflexi-server; make cs
 
 client:
 	npx  openapi-generator-cli generate -i openapi-schema.yaml -g php -o client
