@@ -129,16 +129,32 @@ paths:
         '200':
           description: OK
 
-  '/status':
+  '/status.{suffix}':
     get:
       summary: Get API status
       description: >-
         This operation shows how to override the global security defined above,
         as we want to open it up for all users.
       security: []
+      parameters:
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
 
   '/app/{appId}.{suffix}':
     get:
@@ -357,6 +373,35 @@ paths:
            $ref: '#/components/responses/UnauthorizedError'
       security:
         - basicAuth: []
+
+  '/jobs/status.{suffix}':
+    get:
+      summary: Get Jobs Status
+      description: Retrieve all jobs status
+      operationId: getJobsStatus
+      parameters:
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobsStatus'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
 
   '/runtemplate':
     post:
@@ -649,7 +694,7 @@ paths:
           description: Company not found
       security:
         - basicAuth: []
-  
+
   '/companies.{suffix}':
     get:
       tags:
@@ -1387,7 +1432,6 @@ components:
           format: date-time
         DatUpdate:
           type: string
-          format: date-time
     Topic:
       properties:
         id:
@@ -1409,7 +1453,60 @@ components:
           format: date-time
         DatUpdate:
           type: string
+    Status:
+      properties:
+        companies:
+          type: integer
+          example: "200"
+        apps:
+          type: integer
+          example: "200"
+        runtemplates:
+          type: integer
+          example: "200"
+        topics:
+          type: integer
+          example: "200"
+        credentials:
+          type: integer
+          example: "200"
+        credentialtypes:
+          type: integer
+          example: "200"
+        database:
+          type: "string"
+          example: "mysql:host=localhost;port=3307;dbname=testdb"
+        daemon:
+          type: "string"
+          example: "running"
+        timestamp:
+          type: string
           format: date-time
+          example: "2023-10-01T12:00:00Z"
+    JobsStatus:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-10-01T12:00:00Z"
+        successful_jobs:
+          type: integer
+          description: Successful jobs
+        failed_jobs:
+          type: integer
+          description: Failed jobs
+        incomplete_jobs:
+          type: integer
+          description: Incomplete jobs
+        total_applications:
+          type: integer
+          description: Total applications
+        repeated_jobs:
+          type: integer
+          description: Repeated jobs
+        total_jobs:
+          type: integer
+          description: Total jobs
 
   responses:
     UnauthorizedError:
