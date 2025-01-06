@@ -767,14 +767,7 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  name:
-                    type: string
-                  company_id:
-                    type: integer
-                  type:
-                    type: string
-                    description: Type of credential
+                $ref: '#/components/schemas/Credential'
         '400':
           description: Invalid token supplied
         '401':
@@ -827,7 +820,7 @@ paths:
           description: Invalid token supplied
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  
+
   '/credentials.{suffix}':
     get:
       summary: Get All User Credentials
@@ -1379,10 +1372,6 @@ components:
     Credential:
       properties:
         id:
-          type: integer
-          format: int64
-          example: 10
-        user_id:
           type: integer
           format: int64
           example: 10
