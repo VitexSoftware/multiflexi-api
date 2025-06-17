@@ -1330,29 +1330,20 @@ components:
           type: string
         logo:
           type: string
-        server:
-          type: integer
-          format: int64
-          example: 0
         name:
           type: string
           maxLength: 32
+        code:
+          type: string
+          maxLength: 10
+          example: ''
+          description: Company Code
         ic:
           type: string
           maxLength: 32
-        company:
-          type: string
-          maxLength: 255
-          description: Company Code
         rw:
           type: boolean
           description: Write permissions
-        setup:
-          type: boolean
-          example: false
-        webhook:
-          type: boolean
-          description: Webhook ready
         DatCreate:
           type: string
           format: date-time
@@ -1367,10 +1358,6 @@ components:
           type: string
           format: email
           maxLength: 64
-        code:
-          type: string
-          maxLength: 10
-          example: ''
 
     Credential:
       properties:

@@ -28,3 +28,5 @@ composer.phar
 !/logs/.htaccess
 
 /server/
+nbproject/
+
