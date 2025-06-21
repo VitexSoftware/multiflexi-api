@@ -1,6 +1,8 @@
 ---
 templateDir: templates/server
 additionalProperties:
+  gitUserId: vitexsoftware
+  gitRepoId: multiflexi-api-server
   packageName: MultiFlexi
   apiPackage: Server
   licenseName: MIT

@@ -9,7 +9,7 @@ static-code-analysis: vendor ## Runs a static code analysis with phpstan/phpstan
 
 .PHONY: static-code-analysis-baseline
 static-code-analysis-baseline: check-symfony vendor ## Generates a baseline for static code analysis with phpstan/phpstan
-	vendor/bin/phpstan analyze --configuration=phpstan-default.neon.dist --generate-baseline=phpstan-default-baseline.neon --memory-limit=-1
+	vendor/bin/phpstan analyse --configuration=phpstan-default.neon.dist --generate-baseline=phpstan-default-baseline.neon --memory-limit=-1
 
 .PHONY: tests
 tests: vendor
@@ -37,7 +37,7 @@ prepare:
 	npm install --save-dev --save-exact prettier
 
 server:
-	npx openapi-generator-cli generate -i openapi-schema.yaml -g php-slim4 -c server.yaml -o ~/Projects/Multi/multiflexi-server; cd ~/Projects/Multi/multiflexi-server; make cs
+	npx openapi-generator-cli generate -i openapi-schema.yaml -g php-symfony -o ../multiflexi-server; cd ~/Projects/Multi/multiflexi-server; make cs
 
 client:
 	npx  openapi-generator-cli generate -i openapi-schema.yaml -g php -o client
