@@ -28,5 +28,7 @@ composer.phar
 !/logs/.htaccess
 
 /server/
-nbproject/
+/nbproject/
+/node_modules/
+
 

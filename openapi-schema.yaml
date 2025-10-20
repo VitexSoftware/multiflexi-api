@@ -7,11 +7,12 @@ servers:
   - description: Demo server
     url: https://demo.multiflexi.com/api/VitexSoftware/MultiFlexi/1.0.0
 info:
-  version: "1.1.0"
+  version: "1.2.0"
   title: MultiFlexi API
   description: >-
-    This is an example of using OAuth2 Application Flow in a specification to
-    describe security to your API.
+    MultiFlexi API provides comprehensive access to job execution, application management,
+    and user data operations. The API includes GDPR compliance endpoints for data export
+    (Article 15 - Right of Access) and uses OAuth2 Application Flow for security.
 paths:
   '/':
     get:
@@ -1080,6 +1081,213 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
+  '/logout':
+    post:
+      summary: Odhlášení uživatele (invalidate token/session)
+      description: Invalidační aktuální uživatelskou session nebo token (OAuth2, JWT, případně session cookie).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Uživatelský token k invalidaci
+      responses:
+        '200':
+          description: Odhlášení proběhlo úspěšně
+        '401':
+          description: Uživatel není přihlášen nebo token je neplatný
+
+  '/data-export':
+    get:
+      tags:
+        - gdpr
+      summary: Request personal data export (GDPR Article 15)
+      description: Request export of all personal data associated with the authenticated user
+      operationId: requestDataExport
+      parameters:
+        - name: action
+          in: query
+          required: true
+          description: Action to perform
+          schema:
+            type: string
+            enum: [export, status]
+            example: export
+        - name: format
+          in: query
+          required: false
+          description: Export format (required when action=export)
+          schema:
+            type: string
+            enum: [json, pdf]
+            default: json
+            example: json
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Export request successful
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DataExportResponse'
+                  - $ref: '#/components/schemas/DataExportStatusResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Access denied or suspicious activity detected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+    post:
+      tags:
+        - gdpr
+      summary: Request personal data export (GDPR Article 15)
+      description: Request export of all personal data associated with the authenticated user
+      operationId: requestDataExportPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [export, status]
+                  example: export
+                format:
+                  type: string
+                  enum: [json, pdf]
+                  default: json
+                  example: json
+              required:
+                - action
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [export, status]
+                  example: export
+                format:
+                  type: string
+                  enum: [json, pdf]
+                  default: json
+                  example: json
+              required:
+                - action
+      responses:
+        '200':
+          description: Export request successful
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DataExportResponse'
+                  - $ref: '#/components/schemas/DataExportStatusResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Access denied or suspicious activity detected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+
+  '/data-export-download':
+    get:
+      tags:
+        - gdpr
+      summary: Download personal data export file
+      description: Download previously requested personal data export using secure token
+      operationId: downloadDataExport
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Secure download token received from export request
+          schema:
+            type: string
+            pattern: '^[a-f0-9]{64}$'
+            example: 'a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890123456'
+      responses:
+        '200':
+          description: Data export file download
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportData'
+              example:
+                export_metadata:
+                  export_date: '2025-10-20T16:15:00Z'
+                  user_id: 42
+                  gdpr_article: 'Article 15 - Right of Access'
+                  data_controller: 'MultiFlexi'
+                user_profile:
+                  username: 'john.doe'
+                  email: 'john.doe@example.com'
+                  first_name: 'John'
+                  last_name: 'Doe'
+            text/plain:
+              schema:
+                type: string
+                example: 'MultiFlexi - Personal Data Export\nGenerated: 2025-10-20T16:15:00Z\n\nUSER PROFILE\n------------\nUsername: john.doe\nEmail: john.doe@example.com'
+        '400':
+          description: Invalid or missing token
+        '403':
+          description: Token expired, already used, or access denied
+        '500':
+          description: Failed to generate export
+      security:
+        - basicAuth: []
+
 components:
   schemas:
     App:
@@ -1341,9 +1549,6 @@ components:
         ic:
           type: string
           maxLength: 32
-        rw:
-          type: boolean
-          description: Write permissions
         DatCreate:
           type: string
           format: date-time
@@ -1487,6 +1692,377 @@ components:
           type: integer
           description: Total jobs
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Invalid request parameters"
+        success:
+          type: boolean
+          example: false
+      required:
+        - error
+
+    DataExportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        download_url:
+          type: string
+          format: uri
+          description: Secure download URL for the exported data
+          example: "/data-export.php?token=a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890123456"
+        format:
+          type: string
+          enum: [json, pdf]
+          description: Format of the exported data
+          example: "json"
+        generated_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the export was generated
+          example: "2025-10-20T16:15:00Z"
+        expires_at:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the download link expires
+          example: "2025-10-20T17:15:00Z"
+        notification_sent:
+          type: boolean
+          description: Whether email notification was sent to user
+          example: true
+      required:
+        - success
+        - download_url
+        - format
+        - generated_at
+        - expires_at
+
+    DataExportStatusResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        exports:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Export request description
+                example: "User requested data export in json format from IP 192.168.1.1"
+              requested_at:
+                type: string
+                format: date-time
+                description: ISO 8601 timestamp when the export was requested
+                example: "2025-10-20T15:30:00Z"
+            required:
+              - message
+              - requested_at
+      required:
+        - success
+        - exports
+
+    DataExportData:
+      type: object
+      description: Complete user personal data export structure
+      properties:
+        export_metadata:
+          type: object
+          properties:
+            export_date:
+              type: string
+              format: date-time
+              description: When the export was generated
+              example: "2025-10-20T16:15:00Z"
+            user_id:
+              type: integer
+              description: ID of the user whose data is exported
+              example: 42
+            export_version:
+              type: string
+              description: Version of the export format
+              example: "1.0"
+            gdpr_article:
+              type: string
+              description: GDPR article reference
+              example: "Article 15 - Right of Access"
+            data_controller:
+              type: string
+              description: Name of the data controller
+              example: "MultiFlexi"
+            retention_info:
+              type: string
+              description: Data retention policy information
+              example: "Data is retained according to our privacy policy"
+            contact_info:
+              type: string
+              description: Contact information for data protection inquiries
+              example: "For questions about this export, contact your data protection officer"
+          required:
+            - export_date
+            - user_id
+            - gdpr_article
+            - data_controller
+        user_profile:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              example: 42
+            username:
+              type: string
+              example: "john.doe"
+            email:
+              type: string
+              format: email
+              example: "john.doe@example.com"
+            first_name:
+              type: string
+              example: "John"
+            last_name:
+              type: string
+              example: "Doe"
+            account_enabled:
+              type: boolean
+              example: true
+            account_created:
+              type: string
+              format: date-time
+              example: "2023-01-15T10:30:00Z"
+            last_updated:
+              type: string
+              format: date-time
+              nullable: true
+              example: "2024-06-10T14:22:00Z"
+            user_settings:
+              type: object
+              nullable: true
+              description: User preference settings (if any)
+        company_associations:
+          type: array
+          items:
+            type: object
+            properties:
+              company_id:
+                type: integer
+                example: 15
+              company_code:
+                type: string
+                example: "ACME001"
+              company_name:
+                type: string
+                example: "ACME Corporation"
+              company_identifier:
+                type: string
+                nullable: true
+                example: "12345678"
+              enabled:
+                type: boolean
+                example: true
+              associated_since:
+                type: string
+                format: date-time
+                example: "2023-03-01T09:15:00Z"
+              relationship_type:
+                type: string
+                example: "user_activity"
+        credentials:
+          type: array
+          description: Credential metadata only (no actual passwords/secrets)
+          items:
+            type: object
+            properties:
+              credential_id:
+                type: integer
+                example: 8
+              credential_name:
+                type: string
+                example: "Production Database Access"
+              company_id:
+                type: integer
+                example: 15
+              credential_type:
+                type: string
+                example: "database"
+              note:
+                type: string
+                example: "Actual credential values are not included for security reasons"
+        activity_logs:
+          type: array
+          items:
+            type: object
+            properties:
+              log_id:
+                type: integer
+                example: 12547
+              company_id:
+                type: integer
+                nullable: true
+                example: 15
+              application_id:
+                type: integer
+                nullable: true
+                example: 5
+              severity:
+                type: string
+                example: "info"
+              source:
+                type: string
+                example: "UserLogin"
+              message:
+                type: string
+                example: "User successfully logged in"
+              timestamp:
+                type: string
+                format: date-time
+                example: "2024-10-20T08:30:15Z"
+        job_history:
+          type: array
+          items:
+            type: object
+            properties:
+              job_id:
+                type: integer
+                example: 8521
+              application_id:
+                type: integer
+                example: 5
+              company_id:
+                type: integer
+                example: 15
+              started_at:
+                type: string
+                format: date-time
+                example: "2024-10-19T14:20:00Z"
+              completed_at:
+                type: string
+                format: date-time
+                nullable: true
+                example: "2024-10-19T14:25:30Z"
+              exit_code:
+                type: integer
+                nullable: true
+                example: 0
+              status:
+                type: string
+                example: "success"
+        consent_records:
+          type: object
+          properties:
+            consent_records:
+              type: array
+              items:
+                type: object
+                properties:
+                  consent_id:
+                    type: integer
+                    example: 245
+                  consent_type:
+                    type: string
+                    example: "analytics"
+                  status:
+                    type: string
+                    enum: [granted, denied]
+                    example: "granted"
+                  details:
+                    type: object
+                    nullable: true
+                    description: Additional consent details
+                  policy_version:
+                    type: string
+                    example: "1.0"
+                  granted_at:
+                    type: string
+                    format: date-time
+                    example: "2024-05-15T16:45:00Z"
+                  expires_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2025-05-15T16:45:00Z"
+                  withdrawn_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: null
+                  ip_address:
+                    type: string
+                    example: "192.168.1.100"
+            consent_audit_trail:
+              type: array
+              items:
+                type: object
+                properties:
+                  action:
+                    type: string
+                    example: "granted"
+                  consent_type:
+                    type: string
+                    example: "analytics"
+                  old_value:
+                    type: object
+                    nullable: true
+                  new_value:
+                    type: object
+                    nullable: true
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-05-15T16:45:00Z"
+                  ip_address:
+                    type: string
+                    example: "192.168.1.100"
+        session_history:
+          type: object
+          properties:
+            note:
+              type: string
+              example: "Session history is not permanently stored in the database"
+            current_session_info:
+              type: object
+              properties:
+                session_id:
+                  type: string
+                  example: "abc123def456ghi789"
+                started_at:
+                  type: string
+                  example: "unknown"
+                ip_address:
+                  type: string
+                  example: "192.168.1.100"
+        audit_trails:
+          type: object
+          properties:
+            data_export_requests:
+              type: array
+              items:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User requested data export in json format from IP 192.168.1.100"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-10-20T16:15:00Z"
+      required:
+        - export_metadata
+        - user_profile
+        - company_associations
+        - credentials
+        - activity_logs
+        - job_history
+        - consent_records
+        - session_history
+        - audit_trails
+
   responses:
     UnauthorizedError:
       description: Authentication information is missing or invalid
@@ -1512,3 +2088,20 @@ components:
         minimum: 1
         maximum: 100
         default: 20
+
+tags:
+  - name: gdpr
+    description: GDPR compliance endpoints
+    externalDocs:
+      description: GDPR Article 15 - Right of Access
+      url: 'https://gdpr.eu/article-15-right-of-access/'
+  - name: app
+    description: Application management
+  - name: job
+    description: Job execution management
+  - name: user
+    description: User management
+  - name: company
+    description: Company management
+  - name: runtemplate
+    description: Run template management
