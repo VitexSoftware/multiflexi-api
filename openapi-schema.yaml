@@ -1300,12 +1300,127 @@ components:
           type: integer
           format: int64
           example: 10
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the application is enabled
+        image:
+          type: string
+          description: Base64-encoded application image or URL
         name:
           type: string
-          example: matcher
+          example: RB statement downloader
+        description:
+          type: string
+          example: Download Raiffeisenbank statements in given format
         executable:
           type: string
-          example: multiflexi-probe
+          example: raiffeisenbank-statement-downloader
+        DatCreate:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        DatUpdate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        setup:
+          type: string
+          description: Setup command or instructions
+        cmdparams:
+          type: string
+          description: Command line parameters
+        deploy:
+          type: string
+          description: Deployment instructions
+        homepage:
+          type: string
+          example: https://github.com/Spoje-NET/raiffeisenbank-statement-tools
+        requirements:
+          type: string
+          description: Comma-separated list of required credential types
+        ociimage:
+          type: string
+          description: OCI/Docker container image name
+        version:
+          type: string
+          example: 1.4.1.76
+        code:
+          type: string
+          example: NLOADE
+          description: Short application code
+        uuid:
+          type: string
+          format: uuid
+          example: b6add5c1-67a5-4332-8fe2-12bff71062e6
+        topics:
+          type: string
+          description: Comma-separated list of topics/tags
+        resultfile:
+          type: string
+          description: Result file path
+        artifacts:
+          type: string
+          description: Output artifacts produced by the application
+        environment:
+          type: object
+          description: Application environment configuration fields
+          additionalProperties:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [text, string, password, file-path, bool, integer, set]
+                description: Field type
+              description:
+                type: string
+                description: Field description
+              defval:
+                type: string
+                description: Default value
+              required:
+                type: boolean
+                description: Whether this field is required
+          example:
+            ACCOUNT_NUMBER:
+              type: text
+              description: Bank Account Number
+              defval: ""
+              required: true
+            CERT_PASS:
+              type: password
+              description: Certificate password
+              defval: ""
+              required: true
+        exitCodes:
+          type: array
+          description: Exit code definitions with multilingual descriptions
+          items:
+            type: object
+            properties:
+              severity:
+                type: string
+                enum: [success, error, warning, info]
+                description: Exit code severity level
+              retry:
+                type: boolean
+                description: Whether to retry on this exit code
+              description:
+                type: object
+                description: Multilingual descriptions (en, cs, etc.)
+                additionalProperties:
+                  type: string
+          example:
+            - severity: success
+              retry: false
+              description:
+                en: Success
+                cs: Úspěch
+            - severity: error
+              retry: true
+              description:
+                en: General error
+                cs: Obecná chyba
         tags:
           type: array
           xml:
