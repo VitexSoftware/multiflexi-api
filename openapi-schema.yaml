@@ -162,7 +162,7 @@ paths:
       tags:
         - app
       summary: Get App by ID
-      description: Returns a single App
+      description: Returns a single App wrapped in apps object
       operationId: getAppById
       parameters:
         - name: appId
@@ -323,6 +323,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -359,6 +361,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -477,6 +481,125 @@ paths:
           description: RunTemplate not found
       security:
         - basicAuth: []
+    post:
+      tags:
+        - runtemplate
+      summary: Update RunTemplate by ID
+      description: |
+        Updates a RunTemplate. Request body must include id field matching
+        URL parameter. Only fields present in request body will be updated
+        (partial update).
+      operationId: updateRunTemplateById
+      parameters:
+        - name: runTemplateId
+          in: path
+          description: ID of RunTemplate to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: .json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: Must match runTemplateId from URL
+                active:
+                  type: integer
+                  enum: [0, 1]
+                  description: Enable (1) or disable (0) the RunTemplate
+                interv:
+                  type: string
+                  description: Execution interval code
+                  enum: [c, n, i, h, d, w, m, y]
+                name:
+                  type: string
+                  maxLength: 250
+                  description: RunTemplate name
+                delay:
+                  type: integer
+                  format: int32
+                  description: Delay in seconds before job execution
+                executor:
+                  type: string
+                  maxLength: 255
+                  description: Executor type (Native, Docker, etc.)
+                cron:
+                  type: string
+                  maxLength: 64
+                  description: Cron expression for scheduling
+                note:
+                  type: string
+                  description: Additional notes
+            example:
+              id: 15
+              active: 1
+      responses:
+        '201':
+          description: RunTemplate updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunTemplate'
+        '400':
+          description: Invalid ID supplied or ID mismatch
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "ID mismatch"
+                  expected:
+                    type: integer
+                    example: 15
+                  received:
+                    type: integer
+                    nullable: true
+                    example: 99
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: RunTemplate not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "RunTemplate not found"
+        '500':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Update failed"
+      security:
+        - basicAuth: []
 
   '/runtemplates.{suffix}':
     get:
@@ -497,6 +620,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -606,6 +731,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -715,6 +842,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -839,6 +968,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -956,6 +1087,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -1069,6 +1202,8 @@ paths:
           example: json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
       responses:
         '200':
           description: successful operation
@@ -1524,39 +1659,120 @@ components:
           type: integer
           format: int64
           example: 10
-        active:
-          type: boolean
-          example: true  
         app_id:
           type: integer
           format: int64
           example: 10
+          description: Application ID
         company_id:
           type: integer
           format: int64
           example: 10
-        iterv:
+          description: Company ID
+        interv:
           type: string
-          description: interval
+          description: Execution interval code
+          maxLength: 64
           enum:
+            - c
             - n
+            - i
             - h
             - d
             - w
             - m
             - y
+          example: d
         prepared:
           type: boolean
-          example: true
+          nullable: true
+          description: Whether the RunTemplate is prepared for execution
         success:
-          type: string
-          maxLength: 250
+          type: object
+          nullable: true
+          description: Success action configuration (unserialized)
+          additionalProperties: true
+          example:
+            Zabbix: true
+            Reschedule: false
+            WebHook: false
         fail:
-          type: string
-          maxLength: 250
+          type: object
+          nullable: true
+          description: Failure action configuration (unserialized)
+          additionalProperties: true
+          example:
+            Zabbix: true
+            Reschedule: false
+            WebHook: false
         name:
           type: string
           maxLength: 250
+          nullable: true
+          description: RunTemplate name
+          example: "Daily Report Processing"
+        delay:
+          type: integer
+          format: int32
+          default: 0
+          description: Delay in seconds before job execution
+          example: 18000
+        executor:
+          type: string
+          maxLength: 255
+          default: Native
+          description: Executor type (Native, Docker, etc.)
+          example: Native
+        active:
+          type: boolean
+          default: true
+          description: Whether the RunTemplate is active
+          example: true
+        cron:
+          type: string
+          maxLength: 64
+          nullable: true
+          description: Cron expression for scheduling
+          example: "0 0 * * *"
+        last_schedule:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last scheduled execution timestamp
+          example: "2025-11-21T05:00:00Z"
+        next_schedule:
+          type: string
+          format: date-time
+          nullable: true
+          description: Next scheduled execution timestamp
+        note:
+          type: string
+          nullable: true
+          description: Additional notes about the RunTemplate
+        DatCreate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Creation timestamp
+          example: "2025-11-13T16:37:56Z"
+        DatSave:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last modification timestamp
+          example: "2025-11-21T05:01:53Z"
+        successfull_jobs_count:
+          type: integer
+          format: int32
+          default: 0
+          description: Count of successful jobs
+          example: 9
+        failed_jobs_count:
+          type: integer
+          format: int32
+          default: 0
+          description: Count of failed jobs
+          example: 1
 
     ConfField:
       properties:
@@ -2203,6 +2419,26 @@ components:
         minimum: 1
         maximum: 100
         default: 20
+
+    OffsetParam:
+      name: offset
+      in: query
+      description: number of records to skip (for pagination)
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    OrderParam:
+      name: order
+      in: query
+      description: field name to order results by (use '-' prefix for descending, e.g. '-id')
+      required: false
+      schema:
+        type: string
+        example: "-id"
 
 tags:
   - name: gdpr
