@@ -30,6 +30,7 @@ clean: ## Removes all generated files
 	rm -f README.md
 	rm -rf lib docs
 	rm -rf client server
+	rm -rf python-multiflexi
 
 #SPECURI=https://api.swaggerhub.com/apis/VitexSoftware/MultiFlexi/1.0.0/swagger.yaml
 
@@ -39,8 +40,14 @@ prepare:
 server:
 	npx openapi-generator-cli generate -i openapi-schema.yaml -g php-slim4 -c server.yaml -o ~/Projects/Multi/multiflexi-server; cd ~/Projects/Multi/multiflexi-server; make cs
 
-client:
+php-client:
 	npx  openapi-generator-cli generate -i openapi-schema.yaml -g php -o client
+
+python-client: ## Generate Python client library from OpenAPI schema
+	npx openapi-generator-cli generate -i openapi-schema.yaml -g python -c python-client.yaml -o python-multiflexi
+	@echo "Python client generated successfully in python-multiflexi/"
+	@echo "To install: cd python-multiflexi && pip install -e ."
+
 
 frontend:
 	npx openapi-generator-cli generate -i openapi-schema.yaml -g typescript-angular -o frontend

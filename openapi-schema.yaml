@@ -7,12 +7,13 @@ servers:
   - description: Demo server
     url: https://demo.multiflexi.com/api/VitexSoftware/MultiFlexi/1.0.0
 info:
-  version: "1.2.0"
+  version: "1.3.0"
   title: MultiFlexi API
   description: >-
     MultiFlexi API provides comprehensive access to job execution, application management,
-    and user data operations. The API includes GDPR compliance endpoints for data export
-    (Article 15 - Right of Access) and uses OAuth2 Application Flow for security.
+    event-driven processing, and user data operations. The API includes GDPR compliance
+    endpoints for data export (Article 15 - Right of Access) and uses OAuth2 Application
+    Flow for security.
 paths:
   '/':
     get:
@@ -1216,6 +1217,351 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
+  '/eventsource/{eventSourceId}.{suffix}':
+    get:
+      tags:
+        - eventsource
+      summary: Get EventSource by ID
+      description: Returns a single EventSource (webhook adapter database connection)
+      operationId: getEventSourceById
+      parameters:
+        - name: eventSourceId
+          in: path
+          description: ID of EventSource to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSource'
+        '400':
+          description: Invalid ID supplied
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: EventSource not found
+      security:
+        - basicAuth: []
+    delete:
+      tags:
+        - eventsource
+      summary: Delete EventSource by ID
+      description: Remove an EventSource
+      operationId: deleteEventSourceById
+      parameters:
+        - name: eventSourceId
+          in: path
+          description: ID of EventSource to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: EventSource deleted
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: EventSource not found
+      security:
+        - basicAuth: []
+
+  '/eventsource/':
+    post:
+      tags:
+        - eventsource
+      summary: Create or Update EventSource
+      description: Create or Update EventSource (webhook adapter database connection)
+      operationId: setEventSourceById
+      parameters:
+        - name: eventSourceId
+          in: query
+          required: false
+          description: ID of EventSource to update (omit for create)
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventSource'
+      responses:
+        '201':
+          description: EventSource created or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSource'
+        '400':
+          description: Invalid data supplied
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
+  '/eventsources.{suffix}':
+    get:
+      tags:
+        - eventsource
+      summary: Show All EventSources
+      description: All EventSources registered
+      operationId: listEventSources
+      parameters:
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSource'
+        '400':
+          description: Invalid status value
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
+  '/eventsource/{eventSourceId}/test.{suffix}':
+    post:
+      tags:
+        - eventsource
+      summary: Test EventSource connection
+      description: Test the database connection of an EventSource
+      operationId: testEventSourceConnection
+      parameters:
+        - name: eventSourceId
+          in: path
+          description: ID of EventSource to test
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Connection test result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reachable:
+                    type: boolean
+                    description: Whether the adapter database is reachable
+                  message:
+                    type: string
+                    description: Test result message
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: EventSource not found
+      security:
+        - basicAuth: []
+
+  '/eventrule/{eventRuleId}.{suffix}':
+    get:
+      tags:
+        - eventrule
+      summary: Get EventRule by ID
+      description: Returns a single EventRule (event-to-RunTemplate mapping)
+      operationId: getEventRuleById
+      parameters:
+        - name: eventRuleId
+          in: path
+          description: ID of EventRule to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventRule'
+        '400':
+          description: Invalid ID supplied
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: EventRule not found
+      security:
+        - basicAuth: []
+    delete:
+      tags:
+        - eventrule
+      summary: Delete EventRule by ID
+      description: Remove an EventRule
+      operationId: deleteEventRuleById
+      parameters:
+        - name: eventRuleId
+          in: path
+          description: ID of EventRule to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: EventRule deleted
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: EventRule not found
+      security:
+        - basicAuth: []
+
+  '/eventrule/':
+    post:
+      tags:
+        - eventrule
+      summary: Create or Update EventRule
+      description: Create or Update EventRule (event-to-RunTemplate mapping)
+      operationId: setEventRuleById
+      parameters:
+        - name: eventRuleId
+          in: query
+          required: false
+          description: ID of EventRule to update (omit for create)
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRule'
+      responses:
+        '201':
+          description: EventRule created or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventRule'
+        '400':
+          description: Invalid data supplied
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
+  '/eventrules.{suffix}':
+    get:
+      tags:
+        - eventrule
+      summary: Show All EventRules
+      description: All EventRules registered
+      operationId: listEventRules
+      parameters:
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventRule'
+        '400':
+          description: Invalid status value
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
   '/logout':
     post:
       summary: Odhlášení uživatele (invalidate token/session)
@@ -1968,6 +2314,117 @@ components:
           format: date-time
         DatUpdate:
           type: string
+    EventSource:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          maxLength: 255
+          example: "AbraFlexi Webhooks"
+          description: Human-readable name for this event source
+        adapter_type:
+          type: string
+          maxLength: 128
+          example: "abraflexi-webhook-acceptor"
+          description: Type of webhook adapter
+        db_connection:
+          type: string
+          maxLength: 16
+          enum: [mysql, pgsql, sqlite]
+          default: mysql
+          description: Database driver
+        db_host:
+          type: string
+          maxLength: 255
+          default: localhost
+          description: Database host
+        db_port:
+          type: string
+          maxLength: 8
+          default: "3306"
+          description: Database port
+        db_database:
+          type: string
+          maxLength: 128
+          description: Database name
+        db_username:
+          type: string
+          maxLength: 128
+          description: Database username
+        db_password:
+          type: string
+          maxLength: 255
+          description: Database password
+        poll_interval:
+          type: integer
+          format: int32
+          default: 60
+          description: How often to poll for new changes (seconds)
+        enabled:
+          type: boolean
+          default: true
+          description: Whether this source is active
+        last_processed_id:
+          type: integer
+          format: int64
+          default: 0
+          description: Last processed change inversion ID
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+
+    EventRule:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        event_source_id:
+          type: integer
+          format: int64
+          description: References EventSource
+        evidence:
+          type: string
+          maxLength: 60
+          nullable: true
+          example: "faktura-vydana"
+          description: Evidence type pattern to match (null = any)
+        operation:
+          type: string
+          enum: [any, create, update, delete]
+          default: any
+          description: Operation to match
+        runtemplate_id:
+          type: integer
+          format: int64
+          description: RunTemplate ID to trigger when rule matches
+        priority:
+          type: integer
+          format: int32
+          default: 0
+          description: Higher priority rules are evaluated first
+        enabled:
+          type: boolean
+          default: true
+          description: Whether this rule is active
+        env_mapping:
+          type: string
+          nullable: true
+          description: JSON mapping of change fields to environment variables
+          example: '{"RECORD_ID": "recordid", "EVIDENCE": "evidence"}'
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+
     Status:
       properties:
         companies:
@@ -1988,6 +2445,12 @@ components:
         credentialtypes:
           type: integer
           example: "200"
+        eventsources:
+          type: integer
+          example: "5"
+        eventrules:
+          type: integer
+          example: "12"
         database:
           type: "string"
           example: "mysql:host=localhost;port=3307;dbname=testdb"
@@ -2456,3 +2919,7 @@ tags:
     description: Company management
   - name: runtemplate
     description: Run template management
+  - name: eventsource
+    description: Event source management (webhook adapter database connections)
+  - name: eventrule
+    description: Event rule management (event-to-RunTemplate mappings)

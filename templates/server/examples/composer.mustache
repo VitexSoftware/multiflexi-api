@@ -1,5 +1,4 @@
 {
-  "name": "vitexsoftware/multiflexi-api-server",
   "minimum-stability": "RC",
   "repositories": [
     {
@@ -8,14 +7,9 @@
       "no-api": true
     }
   ],
-  "license": "MIT",
   "require": {
     "php": "^7.4 || ^8.0",
-    "dyorg/slim-token-authentication": "*",
-    "php-di/slim-bridge": "^3.4",
-    "slim/psr7": "^1.5",
     "dyorg/slim-token-authentication": "dev-slim4",
-    "tuupola/slim-basic-auth": "^3.0",
     {{#isGuzzlePsr7}}
     "guzzlehttp/psr7": "^1.6.1",
     "http-interop/http-factory-guzzle": "^1.0.0",
@@ -31,25 +25,22 @@
     {{/isNyholmPsr7}}
     "php-di/slim-bridge": "^3.2",
     {{#isSlimPsr7}}
-    "slim/psr7": "*",
+    "slim/psr7": "^1.1.0",
     {{/isSlimPsr7}}
     "ybelenko/openapi-data-mocker": "^1.0",
     "ybelenko/openapi-data-mocker-server-middleware": "^1.2"
   },
   "require-dev": {
+    "overtrue/phplint": "^2.0.2",
     {{#generateTests}}
     "phpunit/phpunit": "^8.0 || ^9.0",
     {{/generateTests}}
-    "squizlabs/php_codesniffer": "^3.5",
-    "phpstan/phpstan": "*",
-    "friendsofphp/php-cs-fixer": "^3.68",
-    "ergebnis/composer-normalize": "^2.45",
-    "ergebnis/php-cs-fixer-config": "^6.42",
-    "phpstan/phpstan-phpunit": "*"
+    "squizlabs/php_codesniffer": "^3.5"
   },
   "autoload": {
     "psr-4": { "{{escapedInvokerPackage}}\\": [
-      "{{srcBasePath}}/"
+      "{{srcBasePath}}/",
+      "src/"
     ]}
   },
   "autoload-dev": {
@@ -72,10 +63,5 @@
   },
   "config": {
     "sort-packages": true
-  },
-  "config": {
-    "allow-plugins": {
-        "ergebnis/composer-normalize": true
-    }
   }
 }

@@ -1,0 +1,19 @@
+---
+additionalProperties:
+  packageName: multiflexi_client
+  projectName: multiflexi-api-client
+  packageVersion: 1.1.0
+  packageUrl: https://github.com/VitexSoftware/multiflexi-api-python-client
+  packageCompany: VitexSoftware
+  packageAuthor: VitexSoftware
+  packageContact: vitezslav.dvorak@spojenet.cz
+  packageDescription: Python client library for MultiFlexi API
+  packageKeywords: multiflexi,api,client,python
+  apiDocumentationURL: https://multiflexi.readthedocs.io/
+  developerName: VitexSoftware
+  developerEmail: vitezslav.dvorak@spojenet.cz
+  developerOrganization: VitexSoftware
+  developerOrganizationUrl: https://vitexsoftware.com
+  generateSourceCodeOnly: false
+  library: urllib3
+  packageRepository: https://github.com/VitexSoftware/multiflexi-api-python-client
