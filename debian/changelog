@@ -1,10 +1,12 @@
-multiflexi (2.3.0) UNRELEASED; urgency=medium
+multiflexi (2.3.1) UNRELEASED; urgency=medium
 
   * Event-driven job triggering UI
   * EventSource and EventRule management pages
   * Events menu in main navigation
+  * fix: bump version above previous manual builds to ensure upgrade
+    path
 
- -- vitex <info@vitexsoftware.cz>  Thu, 26 Feb 2026 22:00:00 +0100
+ -- vitex <info@vitexsoftware.cz>  Sat, 30 May 2026 12:15:24 +0200
 
 multiflexi (2.2.6) UNRELEASED; urgency=medium
 
