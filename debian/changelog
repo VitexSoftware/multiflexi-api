@@ -1,0 +1,360 @@
+multiflexi (2.3.0) UNRELEASED; urgency=medium
+
+  * Event-driven job triggering UI
+  * EventSource and EventRule management pages
+  * Events menu in main navigation
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 26 Feb 2026 22:00:00 +0100
+
+multiflexi (2.2.6) UNRELEASED; urgency=medium
+
+  * Legacy code removal
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 04 Feb 2026 01:38:04 +0100
+
+multiflexi (2.2.5) unstable; urgency=medium
+
+  * Refactor and enhance various components of the MultiFlexi application
+  * Improved formatting and consistency in companyapp.php, companyapps.php, home.php, init.php, job.php, joblist.php, main.php, reschedule.php, schedule.php files.
+  * Added a new ScheduleApi class to handle schedule-related API requests.
+  * Enhanced job polling mechanism in schedule.php for better job completion handling.
+  * Updated JavaScript functions for improved readability and performance.
+  * Fixed minor bugs and improved error handling across multiple files.
+  * Set SQLite as default database backend with version requirements
+  * Fix missing composer.json in multiflexi package for executor-docker
+  * Use explicit DB engine alternatives: sqlite default, keep installed
+    mysql/pgsql
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 04 Feb 2026 01:37:24 +0100
+
+multiflexi (2.2.1) unstable; urgency=medium
+
+  * Enhanced job listing with filter toolbar
+  * Improved company application display
+  * UI refinements and code quality improvements
+  * PHP 8.2+ compatibility fixes
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 23 Nov 2025 15:58:33 +0100
+
+multiflexi (2.2.0) unstable; urgency=medium
+
+  * CredentialType ui addons introduced
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 11 Nov 2025 21:13:12 +0100
+
+multiflexi (2.2.0) unstable; urgency=medium
+
+  * json2credential-type added
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 11 Nov 2025 21:12:48 +0100
+
+multiflexi (2.1.1) unstable; urgency=medium
+
+  * Runtemplate note editor added
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 09 Nov 2025 22:36:50 +0100
+
+multiflexi (2.1.0) unstable; urgency=medium
+
+  [ Vítězslav Vitex Dvořák ]
+  * Actions saving fix
+
+  [ vitex ]
+  * Updated job lifecycle documentation with comprehensive artifact
+    preservation details
+  * Enhanced job.rst with complete artifact storage system documentation
+    and CLI management guide
+  * Added detailed documentation for 5-phase job lifecycle, artifact
+    preservation, and command-line management
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 06 Nov 2025 18:16:31 +0100
+
+multiflexi (2.0.0) noble; urgency=medium
+
+  * v2.0.0 release
+
+ -- Vítězslav Vitex Dvořák <info@vitexsoftware.cz>  Wed, 05 Nov 2025 14:48:04 +0100
+
+multiflexi (1.32.0) jammy; urgency=medium
+
+  [ vitex ]
+  * GDPR Phase 3 - Security Enhancements implementation
+  * SecurityAuditLogger class for comprehensive security event tracking
+  * DataEncryption class with AES-256-GCM encryption for sensitive data at rest
+  * API Rate Limiting system with configurable endpoint protection
+  * IP Whitelisting system for administrative access control
+  * EncryptionHelpers and RateLimitHelpers for easy integration
+  * Automatic database table creation and management for security components
+  * System initialization integration with global component access
+  * Comprehensive security documentation and implementation guide
+
+  [ Vitex ]
+  * Release version 1.32.0 with GDPR Phase 3 security compliance features
+
+ -- Vítězslav Vitex Dvořák <info@vitexsoftware.cz>  Sat, 25 Oct 2025 17:30:44 +0200
+
+multiflexi (1.31.0) jammy; urgency=medium
+
+  [ vitex ]
+  * GDPR Article 16 - Right of Rectification implementation
+  * User profile management page with data correction capabilities
+  * Approval workflow for sensitive data changes (email, username)
+  * Comprehensive audit logging system for all personal data modifications
+  * Email notification system for request status updates
+  * Administrative interface for reviewing and approving data corrections
+  * Enhanced UserForm with GDPR compliance features and validation
+  * Database migration for user_data_audit and user_data_correction_requests tables
+
+  [ Vitex ]
+  * Release version 1.31.0 with GDPR Article 16 compliance features
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 20 Oct 2025 16:30:00 +0200
+
+multiflexi (1.30.0) jammy; urgency=medium
+
+  [ vitex ]
+  * Added GDPR-compliant consent management system
+  * Cookie consent banner with persistent storage across sessions
+  * Privacy policy and cookie policy pages
+  * ConsentManager class for backend consent operations
+  * ConsentHelper utility functions for template integration
+  * Database migration for consent and consent_log tables
+  * Configurable Google Analytics based on ENABLE_GOOGLE_ANALYTICS setting
+  * Cookie-based consent persistence for anonymous users
+
+  [ Vitex ]
+  * Release version 1.30.0 with GDPR compliance features
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 20 Oct 2025 14:48:00 +0200
+
+multiflexi (1.29.0) jammy; urgency=medium
+
+  [ vitex ]
+  * custom zabbix-host for company
+  * New multiflexi-web package containing web interface components
+  * Separated web files from main multiflexi package for modular deployment
+
+  [ Vitex ]
+  * Release version 1.29.0 with new features and improvements
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 18 Oct 2025 02:56:15 +0200
+
+multiflexi (1.27.2) jammy; urgency=medium
+
+  * Run setup command after saving of configuration
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 11 Jul 2025 00:54:55 +0200
+
+multiflexi (1.27.1) jammy; urgency=medium
+
+  * credential type now can keep its configuragion
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 01 Jul 2025 16:03:10 +0200
+
+multiflexi (1.26.0) jammy; urgency=medium
+
+  [ Vitex ]
+  * live job ouput attempt
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 24 Mar 2025 20:42:05 +0100
+
+multiflexi (1.25.3) jammy; urgency=medium
+
+  [ vitex ]
+  * Jobs Chart added
+
+ -- Vitex <vitezslav.dvorak@spojenet.cz>  Thu, 27 Feb 2025 18:02:02 +0100
+
+multiflexi (1.25.2) jammy; urgency=medium
+
+  [ Vitex ]
+  * runtemplate active flag added
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 18 Feb 2025 16:37:37 +0100
+
+multiflexi (1.25.1) jammy; urgency=medium
+
+  [ vitex ]
+  * artifacts download & highlight added
+
+ -- Vitex <vitezslav.dvorak@spojenet.cz>  Mon, 10 Feb 2025 17:58:47 +0100
+
+multiflexi (1.25.0) jammy; urgency=medium
+
+  * new cli tool
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 31 Jan 2025 12:29:22 +0100
+
+multiflexi (1.24.0) jammy; urgency=medium
+
+  * api@debian works now
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 19 Jan 2025 20:03:19 +0100
+
+multiflexi (1.23.0) jammy; urgency=medium
+
+  * file_store table added
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 17 Jan 2025 04:11:19 +0100
+
+multiflexi (1.22.1) jammy; urgency=medium
+
+  * diagnostic endpoints /status & /jobs/status added to API
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 24 Dec 2024 23:36:55 +0100
+
+multiflexi (1.22.0) jammy; urgency=medium
+
+  * Artifacts Keeping
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 21 Dec 2024 12:10:45 +0100
+
+multiflexi (1.21.1) jammy; urgency=medium
+
+  * Credential Cloner added
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 09 Dec 2024 23:08:22 +0100
+
+multiflexi (1.21.0) jammy; urgency=medium
+
+  * Credentials introduced
+
+ -- vitex <info@vitexsoftware.cz>  Tue, 03 Dec 2024 11:56:25 +0100
+
+multiflexi (1.20.0) jammy; urgency=medium
+
+  * Initial Credentials added
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 01 Dec 2024 21:04:08 +0100
+
+multiflexi (1.19.0) jammy; urgency=medium
+
+  * API Added for Jobs & RunTemplates
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 27 Nov 2024 18:31:48 +0100
+
+multiflexi (1.18.0) jammy; urgency=medium
+
+  * Search added
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 10 Nov 2024 20:14:37 +0100
+
+multiflexi (1.17.0) jammy; urgency=medium
+
+  * Nicest Runtemplates
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 06 Nov 2024 11:46:40 +0100
+
+multiflexi (1.16.0) jammy; urgency=medium
+
+  * Work with Environment rewrited
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 04 Nov 2024 23:58:35 +0100
+
+multiflexi (1.15.0) jammy; urgency=medium
+
+  [ vitezslav.dvorak@spojenet.cz ]
+  * Runtemplate remove action added
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 03 Nov 2024 00:50:19 +0100
+
+multiflexi (1.14.0) jammy; urgency=medium
+
+  [ vitex ]
+  * Config Form Dialogs support added
+
+ --  <vitezslav.dvorak@spojenet.cz>  Tue, 10 Sep 2024 14:39:59 +0200
+
+multiflexi (1.13.1) jammy; urgency=medium
+
+  * Create or remove company using cli
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 01 Sep 2024 23:27:13 +0200
+
+multiflexi (1.12.2) jammy; urgency=medium
+
+  [ vitezslav.dvorak@spojenet.cz ]
+  * cli now can add user and app record
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 22 Aug 2024 22:49:48 +0200
+
+multiflexi (1.12.1) jammy; urgency=medium
+
+  [ Vítězslav Dvořák ]
+  * Config file initialization fix
+
+ --  <vitezslav.dvorak@spojenet.cz>  Tue, 21 May 2024 14:44:58 +0200
+
+multiflexi (1.12.0) jammy; urgency=medium
+      
+  [ CyberVitexus ]
+  * Dedicated multiflexi user created during installation
+ 
+  [ Vítězslav Dvořák ]
+  * App topics itroduced
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Sat, 04 May 2024 08:46:06 +0200
+
+multiflexi (1.10.5) unstable; urgency=medium
+
+  [ CyberVitexus ]
+  * Ability choose run interval between hour and year
+  * Debian package
+  * Export notification email
+  * new packages with database support
+  * sql adapters dependency fix
+  * Conflict defined between DB packages
+  * Auto update package version in debian's composer.json at every build
+  * Added Additional Environment setup for each app/company run
+  * twbootstrap renamed to bootstrap
+  * Release v0.3.6
+  * Support for Boolean config values
+  * Show logs in datatable
+  * Add Setup commands for reminder & matcher
+  * MySQL Compatibility
+  * New Version
+
+  [ vitex ]
+  * executor rewrited
+  * provisioning added
+  * Job Output archived now
+  * 1.4.1
+  * Keep job env
+  * Last company's jobs overview
+  * company enviroment injecting fix
+  * Deleting of company added
+  * Show install age
+  * Internal Scheduler Added
+  * file upload added
+  * job relaunch script generator added
+  * Pohoda support added
+
+  * Scheduled jobs fix
+  * Scheduled Upload Fixed
+  * Commandline App Remover Added
+  * Commandline Trigger added
+  * multiflexi-cli added
+  * Minute period support added to launcher
+
+  [  ]
+  * New Native Executor used now
+
+  [  ]
+  * Zabbix LLD company_code
+  * Initial docker Executor
+  * Output Download added
+  * Custom Actions Works from now
+
+  [  ]
+  * Small fixes
+
+  [ Vítězslav Dvořák ]
+  * separate multiuser created
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Fri, 29 Mar 2024 09:28:32 +0100
+
+multiflexi (0.1) experimental; urgency=medium
+
+  * Initial release.
+
+ -- CyberVitexus <vitex@exiv.jinonice.czf>  Wed, 15 Apr 2020 23:43:40 +0200
