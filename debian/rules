@@ -27,6 +27,8 @@ override_dh_install:
 		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
 	sed -i "\|require_once '/usr/share/php/multiflexi-web/autoload.php';|a require_once '/usr/share/php/MultiFlexiApi/autoload.php';" \
 		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
+	sed -i "\|require_once '/usr/share/php/MultiFlexiApi/autoload.php';|a require_once '/var/lib/composer/multiflexi/autoload.php';" \
+		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
 	sed -i "/loadConfig/c\\\\\Ease\\\\Shared::singleton()->loadConfig('/etc/multiflexi/multiflexi.env', true);" \
 		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
 
