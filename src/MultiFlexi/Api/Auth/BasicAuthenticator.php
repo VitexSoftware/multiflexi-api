@@ -37,13 +37,21 @@ class BasicAuthenticator extends Authenticator
             return true;
         }
 
-        $userInfo = $request->getUri()->getUserInfo();
+        $login = '';
+        $password = '';
 
-        if (strstr($userInfo, ':')) {
-            [$login,$password] = explode(':', $userInfo);
-        } else {
-            $login = $userInfo;
-            $password = '';
+        $authHeader = $request->getHeaderLine('Authorization');
+
+        if (preg_match('/Basic\s+(.+)$/i', $authHeader, $matches)) {
+            $decoded = base64_decode($matches[1], true);
+
+            if ($decoded !== false && str_contains($decoded, ':')) {
+                [$login, $password] = explode(':', $decoded, 2);
+            }
+        }
+
+        if ($login === '') {
+            return false;
         }
 
         $prober = new \MultiFlexi\User();
