@@ -180,6 +180,7 @@ $errorMiddleware->setErrorHandler(
 
 $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
     'relaxed' => ['localhost', 'multiflexi.local'],
+    'path' => $basePath,
     //            'path' => ['/EASE/MultiFlexi/src/api/VitexSoftware/MultiFlexi/1.0.0/apps/', $path . '/apps', $path . '/users'],
     //            "ignore" => [$path . '/', $path . '/ping', $path . '/authorize'],
     //            'path' => '/',
