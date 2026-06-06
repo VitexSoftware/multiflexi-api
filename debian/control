@@ -10,7 +10,7 @@ Package: multiflexi
 Multi-Arch: foreign
 Depends: ${misc:Depends},
  multiflexi-common,
-Recommends: multiflexi-scheduler, multiflexi-web
+Recommends: multiflexi-scheduler, multiflexi-web|multiflexi-web5
 Architecture: all
 Description: Run various tools on top of not even AbraFlexi and Stormware Pohoda
  Define server, customers and its companies. Then specify
@@ -24,14 +24,14 @@ Depends: ${misc:Depends}
  anacron, adduser (>= 3.11),
  php-cli,
 Replaces: multiflexi (<< 2.0.0)
-Suggests: multiflexi-cli, multiflexi-web
+Suggests: multiflexi-cli, multiflexi-web|multiflexi-web5
 Architecture: all
 Description: shared multiflexi configuration
  Create MultiFlexi user and configuration
 
 Package: multiflexi-api
 Pre-Depends: multiflexi-sqlite (>= 2.4.1) | multiflexi-mysql (>= 2.4.1) | multiflexi-pgsql (>= 2.4.1)
-Depends: ${misc:Depends}, php-vitexsoftware-multiflexi-server, php-yaml, multiflexi-web
+Depends: ${misc:Depends}, php-vitexsoftware-multiflexi-server, php-yaml, multiflexi-web|multiflexi-web5
 Architecture: all
 Description: API Server for MultiFlexi
  json/xml/yaml/html interface
@@ -43,37 +43,3 @@ Architecture: all
 Description: Zabbix support for MultiFlexi
  LLD for configured content
 
-#Package: multiflexi-abraflexi
-#Depends: ${misc:Depends},multiflexi, php-vitexsoftware-abraflexi-bricks,php-vitexsoftware-ease-bootstrap4-widgets-abraflexi
-#Architecture: all
-#Description: MultiFlexi support for AbraFlexi
-# AbraFlexi Connection dialog
-
-#Package: multiflexi-raiffeisenbank
-#Multi-Arch: foreign
-#Depends: ${misc:Depends},multiflexi
-#Architecture: all
-#Description: MultiFlexi support for RaiffeisenBank
-# RaiffeisenBank connection dialog
-
-#Package: multiflexi-dev
-#Depends: ${misc:Depends}, multiflexi, jq, php-phpunit-phpunit-mock-objects | phpunit, composer, nodejs, mocha, chai
-#Recommends: php-phpstan-phpstan, php-friendsofphp-php-cs-fixer, chromium-driver | gecko-driver, node-mochawesome, multiflexi-zabbix-selenium
-#Architecture: all
-#Description: MultiFlexi development and testing tools
-# Development files for MultiFlexi including:
-#  - PHPUnit test suite and configuration
-#  - PHPStan static analysis configuration
-#  - PHP-CS-Fixer coding standards configuration
-#  - Selenium/Mocha test suite (requires npm install for additional dependencies)
-#  - Test application definitions
-#  - Development utilities and scripts
-# .
-# Note: Selenium tests require running 'npm install' in tests/selenium/ directory
-# to install additional Node.js dependencies (selenium-webdriver, chromedriver, etc.)
-
-#Package: multiflexi-doc
-#Multi-Arch: foreign
-#Depends: ${misc:Depends}
-#Architecture: all
-#Description: MultiFlexi Html Manual

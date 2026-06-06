@@ -1843,6 +1843,14 @@ components:
         artifacts:
           type: string
           description: Output artifacts produced by the application
+        deffile:
+          type: string
+          description: Path to the application definition JSON file
+          example: /etc/multiflexi/apps/myapp.multiflexi.app.json
+        helmchart:
+          type: string
+          description: URI or local path to Helm chart
+          example: oci://registry.example.com/charts/myapp
         environment:
           type: object
           description: Application environment configuration fields
