@@ -70,6 +70,89 @@ class JobApi extends AbstractJobApi
     }
 
     /**
+     * Create (schedule) a Job from a RunTemplate.
+     *
+     * POST /job/
+     *
+     * Schedules a job for an existing RunTemplate, mirroring the
+     * `multiflexi-cli run-template:schedule` command. This is the inbound
+     * trigger used by external orchestrators such as Node-RED.
+     *
+     * Accepted JSON body fields:
+     *  - runtemplate_id (int, required) — RunTemplate to schedule
+     *  - scheduled (string, optional)   — "now" or "Y-m-d H:i:s" (default "now")
+     *  - executor (string, optional)    — overrides the RunTemplate executor
+     *  - env (object, optional)         — KEY=>VALUE environment overrides
+     *
+     * @param ServerRequestInterface $request  Request
+     * @param ResponseInterface      $response Response
+     */
+    public function setjobById(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $suffix = 'json';
+        $body = json_decode($request->getBody()->getContents(), true);
+
+        if (!\is_array($body)) {
+            $body = [];
+        }
+
+        $queryParams = $request->getQueryParams();
+        $runtemplateId = (int) ($body['runtemplate_id'] ?? $queryParams['runtemplate_id'] ?? 0);
+
+        if ($runtemplateId === 0) {
+            return DefaultApi::prepareResponse($response->withStatus(400), ['error' => 'Missing runtemplate_id'], $suffix);
+        }
+
+        $runTemplate = new \MultiFlexi\RunTemplate($runtemplateId);
+
+        if (empty($runTemplate->getMyKey())) {
+            return DefaultApi::prepareResponse($response->withStatus(404), ['error' => 'RunTemplate not found'], $suffix);
+        }
+
+        if ((int) $runTemplate->getDataValue('active') !== 1) {
+            return DefaultApi::prepareResponse($response->withStatus(409), ['error' => 'RunTemplate is not active'], $suffix);
+        }
+
+        $executor = $body['executor'] ?? $runTemplate->getDataValue('executor');
+        $executor = !empty($executor) ? $executor : 'Native';
+
+        $scheduleTime = $body['scheduled'] ?? 'now';
+
+        try {
+            $scheduleDateTime = new \DateTime($scheduleTime);
+        } catch (\Exception $e) {
+            return DefaultApi::prepareResponse($response->withStatus(400), ['error' => 'Invalid scheduled value'], $suffix);
+        }
+
+        $now = new \DateTime();
+        $isImmediate = ($scheduleDateTime->getTimestamp() <= $now->getTimestamp() + 5);
+        $scheduleType = $isImmediate ? 'adhoc' : 'cli';
+
+        $overridedEnv = new \MultiFlexi\ConfigFields('ApiOverride');
+
+        if (!empty($body['env']) && \is_array($body['env'])) {
+            foreach ($body['env'] as $key => $value) {
+                $overridedEnv->addField(new \MultiFlexi\ConfigField((string) $key, 'string', (string) $key, '', '', (string) $value));
+            }
+        }
+
+        try {
+            $jobber = new \MultiFlexi\Job();
+            $jobber->prepareJob($runTemplate, $overridedEnv, $scheduleDateTime, $executor, $scheduleType);
+
+            return DefaultApi::prepareResponse($response->withStatus(201), [
+                'job_id' => $jobber->getMyKey(),
+                'runtemplate_id' => $runtemplateId,
+                'scheduled' => $scheduleDateTime->format('Y-m-d H:i:s'),
+                'executor' => $executor,
+                'schedule_type' => $scheduleType,
+            ], $suffix, null, 'job');
+        } catch (\Exception $e) {
+            return DefaultApi::prepareResponse($response->withStatus(500), ['error' => 'Failed to schedule job: '.$e->getMessage()], $suffix);
+        }
+    }
+
+    /**
      * GET jobsGet
      * Summary: List all Jobs
      * Notes: List all Jobs.

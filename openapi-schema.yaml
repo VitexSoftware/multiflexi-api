@@ -278,8 +278,11 @@ paths:
     post:
       tags:
         - job
-      summary: Create or Update job record
-      description: Create or Update single job record
+      summary: Schedule a job from a RunTemplate
+      description: >-
+        Schedules a job for an existing RunTemplate (mirrors
+        `multiflexi-cli run-template:schedule`). Used as the inbound trigger by
+        external orchestrators such as Node-RED.
       operationId: setjobById
       parameters:
         - name: jobId
@@ -289,19 +292,52 @@ paths:
             type: integer
             format: int64
         - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        description: RunTemplate scheduling request
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - runtemplate_id
+              properties:
+                runtemplate_id:
+                  type: integer
+                  format: int64
+                  description: RunTemplate to schedule
+                  example: 15
+                scheduled:
+                  type: string
+                  description: '"now" or a "Y-m-d H:i:s" timestamp'
+                  default: now
+                  example: now
+                executor:
+                  type: string
+                  description: Overrides the RunTemplate executor
+                  example: Native
+                env:
+                  type: object
+                  description: Environment variable overrides (KEY=>VALUE) injected into the job
+                  additionalProperties:
+                    type: string
+                  example:
+                    DOCID: "FV-2025-0042"
       responses:
         '201':
-          description: record created or updated
+          description: Job scheduled
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Job'
         '400':
-          description: Invalid ID supplied
+          description: Invalid request body
         '401':
            $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: App not found
+          description: RunTemplate not found
+        '409':
+          description: RunTemplate is not active
       security:
         - basicAuth: []
 
