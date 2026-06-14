@@ -1,3 +1,11 @@
+multiflexi (2.3.2) UNRELEASED; urgency=medium
+
+  * Add Task API: GET /tasks.{suffix} and GET /task/{taskId}.{suffix}
+  * Add Task schema to openapi-schema.yaml
+  * Job schema: add task_id field
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 14 Jun 2026 10:00:00 +0200
+
 multiflexi (2.3.1) UNRELEASED; urgency=medium
 
   * Event-driven job triggering UI
