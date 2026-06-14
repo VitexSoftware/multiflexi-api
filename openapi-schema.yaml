@@ -786,6 +786,123 @@ paths:
       security:
         - basicAuth: []
 
+  '/user/{userId}/roles.{suffix}':
+    get:
+      tags:
+        - user
+        - user-role
+      summary: Get RBAC roles for a user
+      description: Returns the list of active RBAC roles assigned to the specified user
+      operationId: getUserRoles
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RbacRole'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+      security:
+        - basicAuth: []
+
+  '/user/{userId}/roles/':
+    post:
+      tags:
+        - user
+        - user-role
+      summary: Set RBAC roles for a user
+      description: Replace (or extend) the RBAC roles assigned to a user
+      operationId: setUserRoles
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: replace
+          in: query
+          description: When true (default), existing roles not in the supplied list are removed
+          required: false
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - roles
+              properties:
+                roles:
+                  type: array
+                  description: List of RBAC role names to assign
+                  items:
+                    type: string
+                  example: [admin, viewer]
+                assigned_by:
+                  type: integer
+                  format: int64
+                  description: Optional user ID of the person performing the assignment
+      responses:
+        '200':
+          description: Roles updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    format: int64
+                  replace:
+                    type: boolean
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                  role_details:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RbacRole'
+        '400':
+          description: Invalid request or unknown role names
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+      security:
+        - basicAuth: []
+
   '/company/':
     post:
       tags:
@@ -894,6 +1011,158 @@ paths:
           description: Invalid status value
         '401':
            $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
+  '/company/{companyId}/users.{suffix}':
+    get:
+      tags:
+        - company
+        - user
+      summary: List users assigned to a company
+      description: Returns users with their assigned roles in the given company
+      operationId: listCompanyUsers
+      parameters:
+        - name: companyId
+          in: path
+          description: ID of the company
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/OffsetParam'
+        - $ref: '#/components/parameters/OrderParam'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/CompanyUser'
+                    - type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Company not found
+      security:
+        - basicAuth: []
+
+  '/company/{companyId}/user/':
+    post:
+      tags:
+        - company
+        - user
+      summary: Assign a user to a company
+      description: Create or update the role of a user in a company (upsert)
+      operationId: assignUserToCompany
+      parameters:
+        - name: companyId
+          in: path
+          description: ID of the company
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: integer
+                  format: int64
+                  description: ID of the user to assign
+                  example: 10
+                role:
+                  type: string
+                  default: viewer
+                  description: 'Access role in the company (e.g. viewer, manager, admin)'
+                  example: viewer
+      responses:
+        '201':
+          description: User assigned to company
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyUser'
+        '400':
+          description: Invalid request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Company or user not found
+      security:
+        - basicAuth: []
+
+  '/company/{companyId}/user/{userId}':
+    delete:
+      tags:
+        - company
+        - user
+      summary: Remove a user from a company
+      description: Unassign the specified user from the company
+      operationId: unassignUserFromCompany
+      parameters:
+        - name: companyId
+          in: path
+          description: ID of the company
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: path
+          description: ID of the user to remove
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User unassigned (or was not assigned)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  company_id:
+                    type: integer
+                    format: int64
+                  user_id:
+                    type: integer
+                    format: int64
+                  deleted:
+                    type: integer
+                    description: Number of rows removed (0 if user was not assigned)
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Company or user not found
       security:
         - basicAuth: []
 
@@ -1872,7 +2141,8 @@ components:
           example: b6add5c1-67a5-4332-8fe2-12bff71062e6
         topics:
           type: string
-          description: Comma-separated list of topics/tags
+          description: Comma-separated list of topics/tags (deprecated — use the tags array)
+          deprecated: true
         resultfile:
           type: string
           description: Result file path
@@ -2185,6 +2455,12 @@ components:
             - email
             - password
             - checkbox
+        category:
+          type: string
+          maxLength: 32
+          default: ''
+          description: 'Configuration option category: API, Database, Behavior, Security or Other'
+          example: API
         description:
           type: string
         defval:
@@ -2468,6 +2744,62 @@ components:
         modified:
           type: string
           format: date-time
+
+    CompanyUser:
+      description: Many-to-many assignment of a user to a company with an access role
+      type: object
+      properties:
+        company_id:
+          type: integer
+          format: int64
+          example: 1
+          description: Company ID
+        user_id:
+          type: integer
+          format: int64
+          example: 10
+          description: User ID
+        role:
+          type: string
+          default: viewer
+          example: viewer
+          description: 'Access role in the company (e.g. viewer, manager, admin)'
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the assignment was created
+
+    RbacRole:
+      description: RBAC role definition
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          maxLength: 64
+          example: admin
+          description: Machine-readable role name
+        display_name:
+          type: string
+          maxLength: 128
+          example: Administrator
+          description: Human-readable role label
+        is_active:
+          type: boolean
+          default: true
+          description: Whether the role is currently active
+        assigned_at:
+          type: string
+          format: date-time
+          description: When the role was assigned to the user (present on user-role responses)
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional expiry timestamp for the role assignment
 
     Status:
       properties:
@@ -2967,3 +3299,5 @@ tags:
     description: Event source management (webhook adapter database connections)
   - name: eventrule
     description: Event rule management (event-to-RunTemplate mappings)
+  - name: user-role
+    description: RBAC role management for users
