@@ -24,13 +24,13 @@ override_dh_install:
 	dh_install
 	# Patch autoload chain in the installed index.php
 	sed -i "/require_once __DIR__/crequire_once '/usr/share/php/multiflexi-web/autoload.php';" \
-		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
+		debian/multiflexi-api/usr/share/multiflexi-web/api/index.php
 	sed -i "\|require_once '/usr/share/php/multiflexi-web/autoload.php';|a require_once '/usr/share/php/MultiFlexiApi/autoload.php';" \
-		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
+		debian/multiflexi-api/usr/share/multiflexi-web/api/index.php
 	sed -i "\|require_once '/usr/share/php/MultiFlexiApi/autoload.php';|a require_once '/var/lib/composer/multiflexi/autoload.php';" \
-		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
+		debian/multiflexi-api/usr/share/multiflexi-web/api/index.php
 	sed -i "/loadConfig/c\\\\\Ease\\\\Shared::singleton()->loadConfig('/etc/multiflexi/multiflexi.env', true);" \
-		debian/multiflexi-api/usr/share/multiflexi-server/api/index.php
+		debian/multiflexi-api/usr/share/multiflexi-web/api/index.php
 	# Install Composer vendor tree and create autoload.php shim
 	install -d debian/multiflexi-api/var/lib/composer/multiflexi
 	cp -a $(CURDIR)/vendor debian/multiflexi-api/var/lib/composer/multiflexi/
