@@ -47,8 +47,10 @@ class RuntemplateApi extends AbstractRuntemplateApi
     {
         $this->engine->loadFromSQL($runTemplateId);
         $runtemplateData = $this->engine->getData();
-        $runtemplateData['success'] = empty($runtemplateData['success']) ? '' : unserialize($runtemplateData['success']);
-        $runtemplateData['fail'] = empty($runtemplateData['fail']) ? '' : unserialize($runtemplateData['fail']);
+        // Spec declares success/fail as a nullable object; '' doesn't match
+        // either shape, so use null for "not configured" instead.
+        $runtemplateData['success'] = empty($runtemplateData['success']) ? null : (object) unserialize($runtemplateData['success']);
+        $runtemplateData['fail'] = empty($runtemplateData['fail']) ? null : (object) unserialize($runtemplateData['fail']);
 
         switch ($suffix) {
             case 'html':
@@ -85,8 +87,12 @@ class RuntemplateApi extends AbstractRuntemplateApi
 
         foreach ($this->engine->listingQuery()->limit($limit) as $runtemplate) {
             $runtemplateId = $runtemplate['id'];
-            $runtemplate['success'] = empty($runtemplate['success']) ? '' : unserialize($runtemplate['success']);
-            $runtemplate['fail'] = empty($runtemplate['fail']) ? '' : unserialize($runtemplate['fail']);
+            $runtemplate['success'] = empty($runtemplate['success']) ? null : (object) unserialize($runtemplate['success']);
+            $runtemplate['fail'] = empty($runtemplate['fail']) ? null : (object) unserialize($runtemplate['fail']);
+            // listingQuery() returns raw DB rows (tinyint 0/1), unlike
+            // loadFromSQL()->getData() used by getRunTemplateById(); cast
+            // here so both endpoints match the spec's `active: boolean`.
+            $runtemplate['active'] = (bool) $runtemplate['active'];
 
             switch ($suffix) {
                 case 'html':

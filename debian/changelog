@@ -36,6 +36,17 @@ multiflexi (2.3.3) UNRELEASED; urgency=medium
     getAll(), unlike getAppById() which casts it to bool via
     loadFromSQL()/getData(); cast explicitly so both endpoints match the
     spec's `enabled: boolean`.
+  * Fix Job.launched_by/env schema: declared as string, but the server
+    has always returned an integer user id and an unserialized object
+    respectively. Corrected the spec to match.
+  * Fix RuntemplateApi success/fail: empty case returned '' (matches
+    neither the spec's nullable-object type nor any sane client model);
+    now returns null. Non-empty case now force-cast to object so
+    json_encode() can't emit a JSON array for action maps.
+  * Fix RuntemplateApi::listRuntemplates: `active` came back as raw int
+    (0/1) from listingQuery(), unlike getRunTemplateById() which casts
+    it via loadFromSQL()/getData(); cast explicitly so both endpoints
+    match the spec's `active: boolean`.
 
  -- CyberVitexus <cybervitexus@gmail.com>  Wed, 15 Jul 2026 08:21:51 +0200
 

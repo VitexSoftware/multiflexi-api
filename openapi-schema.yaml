@@ -2399,9 +2399,13 @@ components:
           type: string
           format: binary
         launched_by:
-          type: string
+          type: integer
+          format: int64
+          description: User id who launched the job
         env:
-          type: string
+          type: object
+          description: Job environment variables (unserialized from storage; values may be of mixed type)
+          additionalProperties: true
         command:
           type: string
         schedule:
