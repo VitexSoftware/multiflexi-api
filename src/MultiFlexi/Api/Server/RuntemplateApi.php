@@ -51,6 +51,10 @@ class RuntemplateApi extends AbstractRuntemplateApi
         // either shape, so use null for "not configured" instead.
         $runtemplateData['success'] = empty($runtemplateData['success']) ? null : (object) unserialize($runtemplateData['success']);
         $runtemplateData['fail'] = empty($runtemplateData['fail']) ? null : (object) unserialize($runtemplateData['fail']);
+        // getData() doesn't cast tinyint columns either; same fix as
+        // listRuntemplates() so single-item and list responses agree.
+        $runtemplateData['active'] = (bool) $runtemplateData['active'];
+        $runtemplateData['prepared'] = \is_null($runtemplateData['prepared']) ? null : (bool) $runtemplateData['prepared'];
 
         switch ($suffix) {
             case 'html':

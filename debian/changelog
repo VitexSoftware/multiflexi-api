@@ -43,11 +43,10 @@ multiflexi (2.3.3) UNRELEASED; urgency=medium
     neither the spec's nullable-object type nor any sane client model);
     now returns null. Non-empty case now force-cast to object so
     json_encode() can't emit a JSON array for action maps.
-  * Fix RuntemplateApi::listRuntemplates: `active`/`prepared` came back
-    as raw int (0/1) from listingQuery(), unlike getRunTemplateById()
-    which casts via loadFromSQL()/getData(); cast explicitly (preserving
-    null for `prepared`, which is nullable) so both endpoints match the
-    spec's boolean fields.
+  * Fix RuntemplateApi `active`/`prepared`: neither listRuntemplates()
+    nor getRunTemplateById() cast these tinyint columns to bool
+    (getData() doesn't do it either, unlike Application's `enabled`);
+    cast explicitly in both, preserving null for `prepared` (nullable).
 
  -- CyberVitexus <cybervitexus@gmail.com>  Wed, 15 Jul 2026 08:21:51 +0200
 
