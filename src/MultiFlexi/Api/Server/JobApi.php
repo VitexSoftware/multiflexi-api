@@ -66,7 +66,7 @@ class JobApi extends AbstractJobApi
                 break;
         }
 
-        return DefaultApi::prepareResponse($response, $jobData, $suffix, 'job', 'job');
+        return DefaultApi::prepareResponse($response, $jobData, $suffix, null, 'job');
     }
 
     /**
@@ -189,6 +189,6 @@ class JobApi extends AbstractJobApi
             $jobsList[$jobId] = $job;
         }
 
-        return DefaultApi::prepareResponse($response, $jobsList, $suffix, 'jobs', 'job');
+        return DefaultApi::prepareResponse($response, $jobsList, $suffix, null, 'job');
     }
 }

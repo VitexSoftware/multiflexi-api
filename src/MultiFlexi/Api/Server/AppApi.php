@@ -86,6 +86,15 @@ class AppApi extends \MultiFlexi\Api\Server\AbstractAppApi
             $appData['exitCodes'][$code]['description'][$lang] = $exitCodeRow['description'];
         }
 
+        // The spec declares environment/exitCodes as objects (maps keyed by
+        // env var name / exit code). json_encode() only emits a JSON object
+        // for an array if it's non-empty AND has at least one non-sequential
+        // key -- an empty array, or exit codes that happen to be numbered
+        // 0,1,2,... sequentially, both encode as a JSON array `[]`/`[...]`
+        // instead. Casting to stdClass forces the object shape unconditionally.
+        $appData['environment'] = (object) $appData['environment'];
+        $appData['exitCodes'] = (object) $appData['exitCodes'];
+
         switch ($suffix) {
             case 'html':
                 //                $appData['name'] = new \Ease\Html\ATag($appData['id'] . '.html', $appData['name']);
@@ -111,6 +120,11 @@ class AppApi extends \MultiFlexi\Api\Server\AbstractAppApi
         $appsList = [];
 
         foreach ($this->engine->getAll() as $app) {
+            // getAll() returns raw DB rows (tinyint 0/1), unlike
+            // loadFromSQL()->getData() used by getAppById() which casts
+            // typed columns; cast here so listApps() matches the spec's
+            // `enabled: boolean` for both endpoints.
+            $app['enabled'] = (bool) $app['enabled'];
             $appsList[$app['id']] = $app;
 
             switch ($suffix) {

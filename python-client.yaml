@@ -2,7 +2,7 @@
 additionalProperties:
   packageName: multiflexi_client
   projectName: multiflexi-api-client
-  packageVersion: 1.1.0
+  packageVersion: 1.2.0
   packageUrl: https://github.com/VitexSoftware/multiflexi-api-python-client
   packageCompany: VitexSoftware
   packageAuthor: VitexSoftware

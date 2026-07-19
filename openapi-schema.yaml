@@ -368,8 +368,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                description: Apps keyed by their id
+                additionalProperties:
                   $ref: '#/components/schemas/App'
         '400':
           description: Invalid status value
@@ -406,8 +407,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                description: Jobs keyed by their id
+                additionalProperties:
                   $ref: '#/components/schemas/Job'
         '400':
           description: Invalid status value
@@ -749,8 +751,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
+                type: object
+                description: Run templates keyed by their id
+                additionalProperties:
                   $ref: '#/components/schemas/RunTemplate'
         '400':
           description: Invalid status value
@@ -2238,7 +2241,7 @@ components:
           example: b6add5c1-67a5-4332-8fe2-12bff71062e6
         topics:
           type: string
-          description: Comma-separated list of topics/tags (deprecated — use the tags array)
+          description: Comma-separated list of topics/tags (deprecated — use tags)
           deprecated: true
         resultfile:
           type: string
@@ -2303,11 +2306,8 @@ components:
                 en: General error
                 cs: Obecná chyba
         tags:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Tag'
+          type: string
+          description: Comma-separated list of tags (there is no structured Tag entity in the current implementation)
         status:
           type: string
           description: App status in the store

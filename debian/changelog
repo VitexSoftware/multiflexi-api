@@ -17,6 +17,25 @@ multiflexi (2.3.3) UNRELEASED; urgency=medium
   * Fix App.exitCodes schema: was an array missing the code key (lossy),
     now an object keyed by exit code (additionalProperties:
     ExitCodeDetail), matching what the server already emits.
+  * Fix apps.{suffix}, jobs.{suffix}, runtemplates.{suffix}: spec declared
+    a JSON array, server has always returned an object keyed by record
+    id; corrected the spec to match, so generated clients stop failing
+    to deserialize these list responses.
+  * Fix JobApi::getJobById/listJobs wrapping responses in an extra
+    "job"/"jobs" key, unlike every other list/by-id endpoint (App,
+    RunTemplate); removed the wrapper for consistency.
+  * Fix AppApi::getAppById: environment/exitCodes now always encode as a
+    JSON object, even when empty or when exit codes happen to be
+    numbered sequentially from 0 (PHP's json_encode() otherwise emits a
+    JSON array in both cases).
+  * Fix App.tags schema: declared as an array of Tag objects, but there
+    is no Tag entity in the implementation -- it has always been a
+    comma-separated string, same as the deprecated topics field.
+    Corrected the spec to type: string.
+  * Fix AppApi::listApps: `enabled` came back as raw int (0/1) from
+    getAll(), unlike getAppById() which casts it to bool via
+    loadFromSQL()/getData(); cast explicitly so both endpoints match the
+    spec's `enabled: boolean`.
 
  -- CyberVitexus <cybervitexus@gmail.com>  Wed, 15 Jul 2026 08:21:51 +0200
 
