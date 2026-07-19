@@ -91,8 +91,9 @@ class RuntemplateApi extends AbstractRuntemplateApi
             $runtemplate['fail'] = empty($runtemplate['fail']) ? null : (object) unserialize($runtemplate['fail']);
             // listingQuery() returns raw DB rows (tinyint 0/1), unlike
             // loadFromSQL()->getData() used by getRunTemplateById(); cast
-            // here so both endpoints match the spec's `active: boolean`.
+            // here so both endpoints match the spec's boolean fields.
             $runtemplate['active'] = (bool) $runtemplate['active'];
+            $runtemplate['prepared'] = \is_null($runtemplate['prepared']) ? null : (bool) $runtemplate['prepared'];
 
             switch ($suffix) {
                 case 'html':
