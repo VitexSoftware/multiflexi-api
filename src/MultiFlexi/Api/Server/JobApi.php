@@ -130,7 +130,7 @@ class JobApi extends AbstractJobApi
 
         $now = new \DateTime();
         $isImmediate = ($scheduleDateTime->getTimestamp() <= $now->getTimestamp() + 5);
-        $scheduleType = $isImmediate ? 'adhoc' : 'cli';
+        $scheduleType = $isImmediate ? \MultiFlexi\Job::SCHEDULE_TYPE_ADHOC_API : \MultiFlexi\Job::SCHEDULE_TYPE_COMMAND_LINE;
 
         $overridedEnv = new \MultiFlexi\ConfigFields('ApiOverride');
 
