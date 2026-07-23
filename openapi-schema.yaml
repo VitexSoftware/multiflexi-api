@@ -1323,6 +1323,29 @@ paths:
           example: .json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 32
+                company_id:
+                  type: integer
+                  format: int64
+                type:
+                  type: string
+                  enum:
+                    - password
+                    - token
+                    - certificate
+                  description: Type of credential
+                value:
+                  type: string
+                  maxLength: 255
       responses:
         '201':
           description: Record was updated
@@ -1447,6 +1470,25 @@ paths:
           example: .json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 32
+                description:
+                  type: string
+                  maxLength: 255
+                url:
+                  type: string
+                  maxLength: 255
+                logo:
+                  type: string
+                  maxLength: 255
       responses:
         '201':
           description: Record was updated
@@ -1570,6 +1612,20 @@ paths:
           example: .json
           required: true
         - $ref: '#/components/parameters/LimitParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 32
+                color:
+                  type: string
+                  maxLength: 7
+                  example: '#000000'
       responses:
         '201':
           description: Record was updated
