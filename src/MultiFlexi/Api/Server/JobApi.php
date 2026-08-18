@@ -197,6 +197,13 @@ class JobApi extends AbstractJobApi
             $jobsList[$jobId] = $job;
         }
 
+        // Force object shape - see AppApi::listApps() for why: json_encode()
+        // emits a JSON array instead of an object when the array is empty or
+        // its keys happen to be sequential 0-based integers, which would
+        // silently violate the spec's `Dict[str, Job]` (id-keyed object)
+        // contract.
+        $jobsList = (object) $jobsList;
+
         return DefaultApi::prepareResponse($response, $jobsList, $suffix, null, 'job');
     }
 }

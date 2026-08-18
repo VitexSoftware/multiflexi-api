@@ -114,6 +114,13 @@ class RuntemplateApi extends AbstractRuntemplateApi
             $runtemplatesList[$runtemplateId] = $runtemplate;
         }
 
+        // Force object shape - see AppApi::listApps() for why: json_encode()
+        // emits a JSON array instead of an object when the array is empty or
+        // its keys happen to be sequential 0-based integers, which would
+        // silently violate the spec's `Dict[str, RunTemplate]` (id-keyed
+        // object) contract.
+        $runtemplatesList = (object) $runtemplatesList;
+
         return DefaultApi::prepareResponse($response, $runtemplatesList, $suffix, null, 'runtemplate');
     }
 

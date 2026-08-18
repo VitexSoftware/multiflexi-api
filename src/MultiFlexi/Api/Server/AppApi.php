@@ -146,6 +146,13 @@ class AppApi extends \MultiFlexi\Api\Server\AbstractAppApi
             }
         }
 
+        // Force object shape for the same reason as exitCodes/environment in
+        // getAppById() above: json_encode() emits a JSON array instead of an
+        // object when the array is empty or its keys happen to be sequential
+        // 0-based integers, which would silently violate the spec's
+        // `Dict[str, App]` (id-keyed object) contract.
+        $appsList = (object) $appsList;
+
         return DefaultApi::prepareResponse($response, $appsList, $suffix, null, 'application');
     }
 

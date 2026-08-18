@@ -1,11 +1,11 @@
 openapi: '3.0.0'
 servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/VitexSoftware/MultiFlexi/1.0.0
-  - description: Localhost
-    url: http://localhost/MultiFlexi/src/api/VitexSoftware/MultiFlexi/1.0.0
   - description: Demo server
     url: https://demo.multiflexi.com/api/VitexSoftware/MultiFlexi/1.0.0
+  - description: Localhost
+    url: http://localhost/MultiFlexi/src/api/VitexSoftware/MultiFlexi/1.0.0
+  - description: SwaggerHub API Auto Mocking (not a real deployment - do not use as a client default)
+    url: https://virtserver.swaggerhub.com/VitexSoftware/MultiFlexi/1.0.0
 info:
   version: "1.4.0"
   title: MultiFlexi API
