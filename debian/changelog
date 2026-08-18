@@ -1,4 +1,4 @@
-multiflexi (2.3.3) UNRELEASED; urgency=medium
+multiflexi (2.3.3) unstable; urgency=medium
 
   [ vitex ]
   * Add Task API: GET /tasks.{suffix} and GET /task/{taskId}.{suffix}
@@ -57,7 +57,7 @@ multiflexi (2.3.3) UNRELEASED; urgency=medium
     multiflexi.vitexsoftware.com: apps.json returned a bare array). Added
     the same (object) cast to all three.
 
- -- CyberVitexus <cybervitexus@gmail.com>  Wed, 15 Jul 2026 08:21:51 +0200
+ -- vitex <info@vitexsoftware.cz>  Tue, 18 Aug 2026 11:07:44 +0200
 
 multiflexi (2.3.1) UNRELEASED; urgency=medium
 
