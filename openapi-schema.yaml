@@ -531,6 +531,100 @@ paths:
       security:
         - basicAuth: []
 
+  '/auditlog.{suffix}':
+    get:
+      tags:
+        - auditlog
+      summary: List Audit Log entries
+      description: >-
+        Returns entity create/update/delete audit entries, recorded automatically
+        for every model saved or deleted via the web UI, CLI, or REST API.
+      operationId: listAuditLog
+      parameters:
+        - name: suffix
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "json"
+        - name: user_id
+          in: query
+          schema:
+            type: integer
+        - name: entity_type
+          in: query
+          schema:
+            type: string
+        - name: entity_id
+          in: query
+          schema:
+            type: integer
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [create, update, delete]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogEntry'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+
+  '/auditlog/{auditLogId}.{suffix}':
+    get:
+      tags:
+        - auditlog
+      summary: Get Audit Log entry by ID
+      description: Returns a single audit log entry.
+      operationId: getAuditLogById
+      parameters:
+        - name: auditLogId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "json"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogEntry'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Audit Log entry not found
+      security:
+        - basicAuth: []
+
   '/runtemplate':
     post:
       tags:
@@ -2529,6 +2623,45 @@ components:
           items:
             $ref: '#/components/schemas/Job'
           description: Job attempt history (only present in single-task responses)
+
+    AuditLogEntry:
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        user_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: ID of the user who performed the action; null for unattended/system actions (e.g. scheduler daemon)
+        entity_type:
+          type: string
+          nullable: true
+          description: Short class name of the audited entity, e.g. RunTemplate, Company, Credential
+          example: RunTemplate
+        entity_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Primary key of the audited entity row
+        action:
+          type: string
+          enum: [create, update, delete]
+          nullable: true
+        event_description:
+          type: string
+          description: Human-readable summary of the action
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        additional_data:
+          type: object
+          nullable: true
+          description: Extra context stored with the entry (e.g. the delete filter conditions)
+        created_at:
+          type: string
+          format: date-time
 
     RunTemplate:
       properties:
