@@ -273,6 +273,42 @@ paths:
           description: App not found
       security:
         - basicAuth: []
+    delete:
+      tags:
+        - job
+      summary: Delete job by ID
+      description: >-
+        Remove a single job record. Requires the `admin` RBAC role.
+      operationId: deletejobById
+      parameters:
+        - name: jobId
+          in: path
+          description: ID of job to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+      responses:
+        '200':
+          description: Job deleted
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Caller lacks the admin RBAC role
+        '404':
+          description: Job not found
+      security:
+        - basicAuth: []
 
   '/job/':
     post:
@@ -415,6 +451,75 @@ paths:
           description: Invalid status value
         '401':
            $ref: '#/components/responses/UnauthorizedError'
+      security:
+        - basicAuth: []
+    delete:
+      tags:
+        - job
+      summary: Bulk delete jobs matching filters
+      description: >-
+        Delete all jobs matching the given filters (runtemplate_id and/or a
+        begin-time window). Intended for cleaning up runs produced by a
+        scheduler malfunction. At least one filter is required. Requires the
+        `admin` RBAC role.
+      operationId: deletejobs
+      parameters:
+        - name: suffix
+          in: path
+          schema:
+            type: string
+            enum: [json, xml, yaml, html]
+            default: "html"
+          description: force format suffix
+          allowEmptyValue: true
+          example: json
+          required: true
+        - name: runtemplate_id
+          in: query
+          description: Restrict deletion to this RunTemplate ID
+          schema:
+            type: integer
+            format: int64
+        - name: from
+          in: query
+          description: Only delete jobs with begin >= this datetime (Y-m-d H:i:s)
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: Only delete jobs with begin <= this datetime (Y-m-d H:i:s)
+          schema:
+            type: string
+        - name: dry_run
+          in: query
+          description: When true, only report the count/ids that would be deleted
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Jobs deleted (or matched, if dry_run)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dry_run:
+                    type: boolean
+                  matched:
+                    type: integer
+                  deleted:
+                    type: integer
+                  job_ids:
+                    type: array
+                    items:
+                      type: integer
+        '400':
+          description: No filter supplied
+        '401':
+           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Caller lacks the admin RBAC role
       security:
         - basicAuth: []
 
