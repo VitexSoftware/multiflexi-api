@@ -166,18 +166,6 @@ $errorMiddleware->setErrorHandler(
 // route10 → pingGet → /VitexSoftware/MultiFlexi/1.0.0/ping
 // route11 → (unnamed) → /
 
-// Temporarily disable token authentication to test basic auth
-// $app->add(new \Dyorg\TokenAuthentication([
-//     'path' => $app->getBasePath(),
-//     'passthrough' => [$path, $path.'ping', $path.'login'], /* Full paths to match basic auth ignore */
-//     'authenticator' => static function ($arguments) {
-//         // Check if token exists in database and is valid
-//         $token = new \MultiFlexi\Token();
-//         $token->loadFromSQL(['token' => $arguments['token']]);
-//         return $token->getMyKey() !== null;
-//     },
-// ]));
-
 $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
     'relaxed' => ['localhost', 'multiflexi.local'],
     'path' => $basePath,
@@ -196,6 +184,39 @@ $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
         $prober->loadFromSQL(['login' => $arguments['user']]);
 
         return $prober->isAccountEnabled() && $prober->passwordValidation($arguments['password'], $prober->getDataValue($prober->passwordColumn));
+    },
+]));
+
+// Bearer-token auth for service integrations (e.g. Node-RED). Added AFTER
+// HttpBasicAuthentication so it runs FIRST (Slim executes middleware in
+// reverse of add-order): a valid token logs the user in via Ease\Shared so
+// the Basic-auth layer below sees isLogged() === true and skips the password
+// check. No token present -> fall through to Basic auth unchanged. A
+// present-but-invalid/expired token is rejected outright rather than
+// silently falling back to Basic.
+$app->add(new \Dyorg\TokenAuthentication([
+    'secure' => true,
+    'relaxed' => ['localhost', 'multiflexi.local'],
+    'path' => $basePath,
+    'except' => [$path, $path.'ping', $path.'login'],
+    'authenticator' => static function ($request, \Dyorg\TokenAuthentication\TokenSearch $tokenSearch) {
+        try {
+            $tokenString = $tokenSearch->getToken($request);
+        } catch (\Dyorg\TokenAuthentication\Exceptions\TokenNotFoundException $exc) {
+            // No bearer token on this request - let Basic auth handle it.
+            return true;
+        }
+
+        $token = new \MultiFlexi\Token();
+        $token->loadFromSQL(['token' => $tokenString]);
+
+        if ($token->isValid() === false) {
+            throw new \Dyorg\TokenAuthentication\Exceptions\UnauthorizedException('Invalid or expired token');
+        }
+
+        \Ease\Shared::user($token->getUser());
+
+        return true;
     },
 ]));
 
