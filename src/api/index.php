@@ -172,7 +172,13 @@ $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
     //            'path' => ['/EASE/MultiFlexi/src/api/VitexSoftware/MultiFlexi/1.0.0/apps/', $path . '/apps', $path . '/users'],
     //            "ignore" => [$path . '/', $path . '/ping', $path . '/authorize'],
     //            'path' => '/',
-    'ignore' => [$path, $path.'ping', $path.'login'],
+    // Do NOT add $path (the bare versioned API root) here: this library's
+    // path matcher appends "(/.*)?$" to every ignore entry, so a bare
+    // prefix that every other route is nested under would exempt ALL of
+    // them, not just the index route itself - there is no way to exempt
+    // only the exact root with this matcher. The index route now requires
+    // authentication like everything else.
+    'ignore' => [$path.'ping', $path.'login'],
     //            "authenticator" => new \MultiFlexi\Auth\BasicAuthenticator()
     'authenticator' => static function ($arguments) {
         $prober = \Ease\Shared::user(null, '\MultiFlexi\User');
@@ -198,7 +204,7 @@ $app->add(new \Dyorg\TokenAuthentication([
     'secure' => true,
     'relaxed' => ['localhost', 'multiflexi.local'],
     'path' => $basePath,
-    'except' => [$path, $path.'ping', $path.'login'],
+    'except' => [$path.'ping', $path.'login'],
     'authenticator' => static function ($request, \Dyorg\TokenAuthentication\TokenSearch $tokenSearch) {
         try {
             $tokenString = $tokenSearch->getToken($request);
