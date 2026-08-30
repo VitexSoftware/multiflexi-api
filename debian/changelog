@@ -1,3 +1,16 @@
+multiflexi (2.3.4) unstable; urgency=medium
+
+  * Fix HttpBasicAuthentication 'ignore' and TokenAuthentication 'except'
+    lists in src/api/index.php: entries were bare names (e.g. 'login',
+    'ping') but the actual routes are only ever reachable as
+    /{name}.{suffix} (json|xml|yaml|html). The underlying RequestPathRule
+    regex ("^{$ignore}(/.*)?$") never matched the ".json" suffix, so
+    login/ping stayed incorrectly Basic-Auth-gated despite being listed
+    as exempt. Also added 'status' and 'index', which are security: []
+    in openapi-schema.yaml but were missing from both lists entirely.
+
+ -- vitex <info@vitexsoftware.cz>  Sun, 30 Aug 2026 18:27:26 +0200
+
 multiflexi (2.3.3) unstable; urgency=medium
 
   [ vitex ]

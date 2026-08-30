@@ -166,6 +166,17 @@ $errorMiddleware->setErrorHandler(
 // route10 → pingGet → /VitexSoftware/MultiFlexi/1.0.0/ping
 // route11 → (unnamed) → /
 
+// All public (security: []) routes in openapi-schema.yaml are registered
+// as /{name}.{suffix} (suffix: json|xml|yaml|html - see RegisterRoutes.php),
+// never as a bare /{name}. RequestPathRule compiles each ignore entry as
+// "@^{$ignore}(/.*)?$@", which only matches the bare name or a sub-path -
+// ".json" is neither, so a plain $path.'login' NEVER actually matches the
+// real route and login/ping ended up Basic-Auth-gated despite being listed
+// here. Append an optional suffix group to each entry so the exemption
+// matches what these routes are actually reachable at. status/index are
+// also security: [] in the spec and were missing entirely.
+$publicSuffix = '(\.(?:json|xml|yaml|html))?';
+
 $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
     'relaxed' => ['localhost', 'multiflexi.local'],
     'path' => $basePath,
@@ -178,7 +189,12 @@ $app->add(new \Tuupola\Middleware\HttpBasicAuthentication([
     // them, not just the index route itself - there is no way to exempt
     // only the exact root with this matcher. The index route now requires
     // authentication like everything else.
-    'ignore' => [$path.'ping', $path.'login'],
+    'ignore' => [
+        $path.'ping'.$publicSuffix,
+        $path.'login'.$publicSuffix,
+        $path.'status'.$publicSuffix,
+        $path.'index'.$publicSuffix,
+    ],
     //            "authenticator" => new \MultiFlexi\Auth\BasicAuthenticator()
     'authenticator' => static function ($arguments) {
         $prober = \Ease\Shared::user(null, '\MultiFlexi\User');
@@ -204,7 +220,14 @@ $app->add(new \Dyorg\TokenAuthentication([
     'secure' => true,
     'relaxed' => ['localhost', 'multiflexi.local'],
     'path' => $basePath,
-    'except' => [$path.'ping', $path.'login'],
+    // See the matching 'ignore' comment above - same bare-name-vs-.{suffix}
+    // mismatch applies here.
+    'except' => [
+        $path.'ping'.$publicSuffix,
+        $path.'login'.$publicSuffix,
+        $path.'status'.$publicSuffix,
+        $path.'index'.$publicSuffix,
+    ],
     'authenticator' => static function ($request, \Dyorg\TokenAuthentication\TokenSearch $tokenSearch) {
         try {
             $tokenString = $tokenSearch->getToken($request);
