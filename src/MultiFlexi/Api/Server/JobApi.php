@@ -48,6 +48,9 @@ class JobApi extends AbstractJobApi
         $this->engine->loadFromSQL((int) $jobId);
         $jobData = $this->engine->getData();
         $jobData['env'] = unserialize($jobData['env']);
+        $jobData['exitcode_description'] = $this->engine->getDataValue('exitcode') !== null
+            ? $this->engine->getExitCodeDescription()
+            : null;
 
         switch ($suffix) {
             case 'html':
@@ -169,10 +172,22 @@ class JobApi extends AbstractJobApi
         $jobsList = [];
         $queryParams = $request->getQueryParams();
         $limit = (\array_key_exists('limit', $queryParams)) ? $queryParams['limit'] : $this->engine->limit;
+        $appCache = [];
 
         foreach ($this->engine->listingQuery()->limit($limit) as $job) {
             $jobId = $job['id'];
             $job['env'] = unserialize($job['env']);
+            $job['exitcode_description'] = null;
+
+            if ($job['exitcode'] !== null && !empty($job['app_id'])) {
+                $appId = (int) $job['app_id'];
+
+                if (!isset($appCache[$appId])) {
+                    $appCache[$appId] = new \MultiFlexi\Application($appId);
+                }
+
+                $job['exitcode_description'] = $appCache[$appId]->exitCodeDescription((int) $job['exitcode']);
+            }
 
             switch ($suffix) {
                 case 'html':
